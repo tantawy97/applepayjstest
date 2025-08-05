@@ -1,0 +1,12 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/.vscode
+/src/ApplePayJS/bin/Debug/net9.0
+/src/ApplePayJS/obj
+/tests/ApplePayJS.Tests/bin/Debug/net9.0
+/tests/ApplePayJS.Tests/obj
+/src/ApplePayJS/node_modules/.bin
+/src/ApplePayJS/node_modules

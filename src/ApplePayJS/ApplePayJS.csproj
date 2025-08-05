@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <AssemblyName>JustEat.ApplePayJS</AssemblyName>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+    <OutputType>Exe</OutputType>
+    <PackageId>JustEat.ApplePayJS</PackageId>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/justeattakeaway/ApplePayJSSample</PackageProjectUrl>
+    <PackageReleaseNotes>$(PackageProjectUrl)/releases</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>applepay</PackageTags>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <RootNamespace>JustEat.ApplePayJS</RootNamespace>
+    <TargetFramework>net9.0</TargetFramework>
+    <TypeScriptToolsVersion>latest</TypeScriptToolsVersion>
+    <UserSecretsId>JustEat.ApplePayJS</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="applepay-dev.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="*.pfx" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="applepay-dev.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="localhost-dev.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="merchant_identity.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(InstallWebPackages)' == '' and ('$(CI)' != '' or !Exists('$(MSBuildThisFileDirectory)\node_modules')) ">
+    <InstallWebPackages>true</InstallWebPackages>
+  </PropertyGroup>
+  <Target Name="InstallPackages" BeforeTargets="Build" Condition=" '$(InstallWebPackages)' == 'true' ">
+    <Exec Command="npm ci" />
+    <Exec Command="npm run install" />
+  </Target>
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
+    <Exec Command="npm run build" />
+    <Exec Command="npm run lint" />
+  </Target>
+  <Target Name="AddGeneratedContentItems" BeforeTargets="AssignTargetPaths">
+    <ItemGroup>
+      <Content Include="wwwroot/**" CopyToPublishDirectory="PreserveNewest" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder);@(Content)" />
+    </ItemGroup>
+  </Target>
+</Project>
