@@ -1,14 +1,15 @@
 // Copyright (c) Just Eat, 2016. All rights reserved.
 // Licensed under the Apache 2.0 license. See the LICENSE file in the project root for full license information.
 
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using JustEat.ApplePayJS.Models;
 using Microsoft.Extensions.Options;
+using System.Runtime.ConstrainedExecution;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace JustEat.ApplePayJS.Clients;
 
-public class MerchantCertificate(IOptions<ApplePayOptions> options)
+public class MerchantCertificate(IOptions<ApplePayOptions> options, ILogger<MerchantCertificate> _logger)
 {
     private readonly ApplePayOptions _options = options.Value;
 
@@ -34,6 +35,8 @@ public class MerchantCertificate(IOptions<ApplePayOptions> options)
         try
         {
             using var merchantCertificate = GetCertificate();
+            _logger.LogInformation("merchantCertificate - HasPrivateKey {@HasPrivateKey}", merchantCertificate.HasPrivateKey);
+
             return GetMerchantIdentifier(merchantCertificate);
         }
         catch (InvalidOperationException)
@@ -73,7 +76,10 @@ public class MerchantCertificate(IOptions<ApplePayOptions> options)
         {
             return X509CertificateLoader.LoadPkcs12FromFile(
                 fileName ?? string.Empty,
-                password);
+                password, X509KeyStorageFlags.MachineKeySet |
+    X509KeyStorageFlags.Exportable |
+    X509KeyStorageFlags.PersistKeySet);
+
         }
         catch (Exception ex)
         {

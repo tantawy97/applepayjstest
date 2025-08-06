@@ -10,3 +10,6 @@
 /tests/ApplePayJS.Tests/obj
 /src/ApplePayJS/node_modules/.bin
 /src/ApplePayJS/node_modules
+/src/ApplePayJS/.config
+/src/ApplePayJS/bin/Release/net9.0
+/src/ApplePayJS/Properties/PublishProfiles

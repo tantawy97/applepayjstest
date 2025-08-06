@@ -3,17 +3,18 @@
 
 namespace JustEat.ApplePayJS.Controllers;
 
-using System.Net.Mime;
-using System.Text.Json;
 using JustEat.ApplePayJS.Clients;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Models;
+using System.Net.Mime;
+using System.Text.Json;
 
 public class HomeController(
     ApplePayClient client,
     MerchantCertificate certificate,
-    IOptions<ApplePayOptions> options) : Controller
+    IOptions<ApplePayOptions> options, ILogger<HomeController> _logger) : Controller
 {
     public IActionResult Index()
     {
@@ -23,7 +24,7 @@ public class HomeController(
             MerchantId = certificate.GetMerchantIdentifier(),
             StoreName = options.Value.StoreName,
         };
-
+        _logger.LogInformation("Index {@model}",model);
         return View(model);
     }
 
@@ -41,6 +42,7 @@ public class HomeController(
         {
             return BadRequest();
         }
+        _logger.LogInformation("MerchantValidation - model:{@model}", model);
 
         // Create the JSON payload to POST to the Apple Pay merchant validation URL.
         var request = new MerchantSessionRequest()
@@ -50,6 +52,7 @@ public class HomeController(
             InitiativeContext = Request.GetTypedHeaders().Host.Value,
             MerchantIdentifier = certificate.GetMerchantIdentifier(),
         };
+        _logger.LogInformation("MerchantValidation - request:{@request}", request);
 
         JsonDocument merchantSession = await client.GetMerchantSessionAsync(requestUri, request, cancellationToken);
 

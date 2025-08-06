@@ -4,6 +4,7 @@
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup>
-    <ActiveDebugProfile>Container (Dockerfile)</ActiveDebugProfile>
+    <ActiveDebugProfile>ApplePayJS</ActiveDebugProfile>
+    <NameOfLastUsedPublishProfile>D:\projects\Apple Pay\applepayjstest\src\ApplePayJS\Properties\PublishProfiles\site33071-WebDeploy.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>

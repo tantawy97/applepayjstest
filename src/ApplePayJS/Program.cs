@@ -4,6 +4,9 @@
 using JustEat.ApplePayJS.Clients;
 using JustEat.ApplePayJS.Models;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using System.Security.Authentication;
+using YCWebsite.Application.Loggers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +41,7 @@ builder.Services.AddHttpClient<ApplePayClient>("ApplePay")
     var certificate = merchantCertificate.GetCertificate();
 
     var handler = new HttpClientHandler();
+
     handler.ClientCertificates.Add(certificate);
 
     // Apple Pay JS requires the use of at least TLS 1.2 to generate a merchant session:
@@ -47,6 +51,10 @@ builder.Services.AddHttpClient<ApplePayClient>("ApplePay")
 
     return handler;
 });
+builder.Services.AddProblemDetails();
+Log.Logger = LoggerConfigurations.CreateSerilogLogger($"testapplepay");
+builder.Host.UseSerilog();
+Log.Information("Starting Web Host");
 
 var app = builder.Build();
 
