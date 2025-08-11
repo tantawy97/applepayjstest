@@ -47,7 +47,7 @@ builder.Services.AddHttpClient<ApplePayClient>("ApplePay")
     // Apple Pay JS requires the use of at least TLS 1.2 to generate a merchant session:
     // https://developer.apple.com/documentation/applepayjs/setting_up_server_requirements
     // If you run an older operating system that does not negotiate this by default, uncomment the line below.
-    // handler.SslProtocols = SslProtocols.Tls12;
+    //handler.SslProtocols = SslProtocols.Tls12;
 
     return handler;
 });

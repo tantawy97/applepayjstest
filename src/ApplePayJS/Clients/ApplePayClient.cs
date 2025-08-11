@@ -19,7 +19,7 @@ public class ApplePayClient(HttpClient httpClient, ILogger<ApplePayClient> _logg
         _logger.LogInformation("MerchantValidation - response StatusCode:{@StatusCode}", response.StatusCode);
         _logger.LogInformation("MerchantValidation - response:{@response}", response);
 
-        response.EnsureSuccessStatusCode();
+        //response.EnsureSuccessStatusCode();
 
         // Read the opaque merchant session JSON from the response body.
         var merchantSession = await response.Content.ReadFromJsonAsync<JsonDocument>(cancellationToken);
