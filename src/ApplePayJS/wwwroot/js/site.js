@@ -14,8 +14,8 @@ justEat = {
             var delivery = "0.01";
             var deliveryTotal = (Number(subtotal) + Number(delivery)).toString();
 
-            var countryCode = $("meta[name='payment-country-code']").attr("content") || "GB";
-            var currencyCode = $("meta[name='payment-currency-code']").attr("content") || "GBP";
+            var countryCode = $("meta[name='payment-country-code']").attr("content") || "US";
+            var currencyCode = $("meta[name='payment-currency-code']").attr("content") || "USD";
             var storeName = $("meta[name='apple-pay-store-name']").attr("content");
 
             var totalForCollection = {
@@ -94,6 +94,8 @@ justEat = {
                     data: JSON.stringify(data),
                     headers: headers
                 }).then(function (merchantSession) {
+                    console.log("merchantSession:");
+                    console.log(merchantSession);
                     // Complete validation by passing the merchant session to the Apple Pay session.
                     session.completeMerchantValidation(merchantSession);
                 });
@@ -132,6 +134,29 @@ justEat = {
                 // Get the payment data for use to capture funds from
                 // the encrypted Apple Pay token in your server.
                 var token = event.payment.token.paymentData;
+
+                console.log("token:" + JSON.stringify(token));
+                //debugger;
+                var antiforgeryHeader = $("meta[name='x-antiforgery-name']").attr("content");
+                var antiforgeryToken = $("meta[name='x-antiforgery-token']").attr("content");
+
+                var headers = {};
+                headers[antiforgeryHeader] = antiforgeryToken;
+                if (token) {
+                    $.ajax({
+                        url: $("link[rel='merchant-token']").attr("href"),
+                        method: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(token),
+                        headers: headers
+                    }).then(function (vs) {
+                        console.log("token response:", vs);
+                    }).catch(function (error) {
+                        console.error("Error sending token:", error);
+                    });
+                } else {
+                    console.error("Payment token is missing.");
+                }
 
                 // Apply the details from the Apple Pay sheet to the page.
                 var update = function (panel, contact) {

@@ -33,8 +33,8 @@ namespace justEat {
             this.applePayVersion = 10;
 
             // Set the appropriate ISO country and currency codes
-            this.countryCode = $("meta[name='payment-country-code']").attr("content") || "GB";
-            this.currencyCode = $("meta[name='payment-currency-code']").attr("content") || "GBP";
+            this.countryCode = $("meta[name='payment-country-code']").attr("content") || "US";
+            this.currencyCode = $("meta[name='payment-currency-code']").attr("content") || "USD";
         }
 
         /**

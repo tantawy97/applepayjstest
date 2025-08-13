@@ -5,6 +5,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>ApplePayJS</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>D:\projects\Apple Pay\applepayjstest\src\ApplePayJS\Properties\PublishProfiles\site33071-WebDeploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\Work\Apple Pay\applepayjstest\src\ApplePayJS\Properties\PublishProfiles\paymentapp - Zip Deploy.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>

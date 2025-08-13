@@ -179,8 +179,8 @@ var justEat;
             this.storeName = $("meta[name='apple-pay-store-name']").attr("content");
             this.validationResource = $("link[rel='merchant-validation']").attr("href");
             this.applePayVersion = 10;
-            this.countryCode = $("meta[name='payment-country-code']").attr("content") || "GB";
-            this.currencyCode = $("meta[name='payment-currency-code']").attr("content") || "GBP";
+            this.countryCode = $("meta[name='payment-country-code']").attr("content") || "US";
+            this.currencyCode = $("meta[name='payment-currency-code']").attr("content") || "USD";
         }
         ApplePay.prototype.initialize = function () {
             var _this = this;

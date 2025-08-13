@@ -9,6 +9,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Models;
 using System.Net.Mime;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Text.Json;
 
 public class HomeController(
@@ -18,6 +21,9 @@ public class HomeController(
 {
     public IActionResult Index()
     {
+
+      
+
         // Get the merchant identifier and store name for use in the JavaScript by ApplePaySession.
         var model = new HomeModel()
         {
@@ -56,8 +62,67 @@ public class HomeController(
 
         JsonDocument merchantSession = await client.GetMerchantSessionAsync(requestUri, request, cancellationToken);
 
+        _logger.LogInformation("merchantSession - response:{@merchantSession}", merchantSession.RootElement);
         // Return the merchant session as-is to the JavaScript as JSON.
         return Json(merchantSession.RootElement);
+    }
+
+    [HttpPost]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Route("applepay/token", Name = "MerchantToken")]
+    public async Task<IActionResult> Token([FromBody] ApplePayToken model, CancellationToken cancellationToken = default)
+    {
+        
+        _logger.LogInformation("token - model:{@model}", model);
+
+
+        var certPath = "apple_pay.p12";
+        var certPassword = "1234";
+        var cert = new X509Certificate2(certPath, certPassword, X509KeyStorageFlags.Exportable);
+
+        // Extract private key using BouncyCastle
+        AsymmetricKeyParameter privateKey;
+        using (var stream = new FileStream(certPath, FileMode.Open, FileAccess.Read))
+        {
+            var pkcs12Store = new Pkcs12Store(stream, certPassword.ToCharArray());
+            string alias = pkcs12Store.Aliases.Cast<string>().FirstOrDefault(a => pkcs12Store.IsKeyEntry(a));
+            privateKey = pkcs12Store.GetKey(alias).Key;
+        }
+
+        // Parse token fields
+        byte[] ephemeralPublicKeyBytes = Convert.FromBase64String(model.Header.EphemeralPublicKey);
+        byte[] encryptedData = Convert.FromBase64String(model.Data);
+
+        // Perform ECDH key agreement
+        var ephemeralPublicKey = (ECPublicKeyParameters)PublicKeyFactory.CreateKey(ephemeralPublicKeyBytes);
+        var agreement = new ECDHBasicAgreement();
+        agreement.Init(privateKey);
+        var sharedSecret = agreement.CalculateAgreement(ephemeralPublicKey);
+        byte[] sharedSecretBytes = sharedSecret.ToByteArrayUnsigned();
+
+        // Derive symmetric key using SHA-256
+        byte[] symmetricKey = SHA256.Create().ComputeHash(sharedSecretBytes);
+
+        // Decrypt using AES-GCM
+        byte[] iv = new byte[12];
+        Array.Copy(encryptedData, 0, iv, 0, 12);
+
+        byte[] cipherText = new byte[encryptedData.Length - 12 - 16];
+        Array.Copy(encryptedData, 12, cipherText, 0, cipherText.Length);
+
+        byte[] tag = new byte[16];
+        Array.Copy(encryptedData, encryptedData.Length - 16, tag, 0, 16);
+
+        byte[] plaintext = new byte[cipherText.Length];
+        using (var aes = new AesGcm(symmetricKey))
+        {
+            aes.Decrypt(iv, cipherText, tag, plaintext);
+        }
+
+        var decryptedJson = Encoding.UTF8.GetString(plaintext);
+        _logger.LogInformation("Decrypted Apple Pay Payload: {payload}", decryptedJson);
+
+        return Json("done");
     }
 
     public IActionResult Error() => View();
