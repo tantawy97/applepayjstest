@@ -77,9 +77,4 @@ app.MapDefaultControllerRoute();
 
 app.Run();
 
-namespace JustEat.ApplePayJS
-{
-    public partial class Program
-    {
-    }
-}
+

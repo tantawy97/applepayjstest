@@ -76,9 +76,7 @@ public class MerchantCertificate(IOptions<ApplePayOptions> options, ILogger<Merc
         {
             return X509CertificateLoader.LoadPkcs12FromFile(
                 fileName ?? string.Empty,
-                password, X509KeyStorageFlags.MachineKeySet |
-    X509KeyStorageFlags.Exportable |
-    X509KeyStorageFlags.PersistKeySet);
+                password);
 
         }
         catch (Exception ex)

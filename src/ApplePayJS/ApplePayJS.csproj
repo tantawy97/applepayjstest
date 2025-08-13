@@ -37,6 +37,9 @@
     <Content Update="applepay-dev.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Update="wwwroot\.well-known\apple-developer-merchantid-domain-association.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Update="localhost-dev.pfx">
